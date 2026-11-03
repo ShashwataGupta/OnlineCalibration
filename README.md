@@ -4,9 +4,9 @@ Proof of concept for **targetless camera calibration against a known lidar**. Th
 transform is treated as known; the camera-to-body transform is refined by aligning lidar edges with
 image edges. Everything is in a single script, `calib_poc.py`.
 
-KITTI raw stands in for the wheel loader:
+KITTI raw stands in for the general vehicle:
 
-| Wheel loader            | KITTI raw                              |
+| general vehicle            | KITTI raw                              |
 |-------------------------|----------------------------------------|
 | vehicle body `B`        | OXTS IMU frame                         |
 | lidar `L`, `T_B_L` known | Velodyne HDL-64, `calib_imu_to_velo.txt` |
@@ -138,7 +138,7 @@ The translation error is about 10 cm in every case.
    trial converges to the same pose: about 0.45° pitch and about 10 cm off, even when started from
    zero translation error. Pitch and camera height trade off along a nearly flat valley, and the
    edge-distance score at that pose (2.02 px) is *lower* than at ground truth (2.12 px).
-   **Translation therefore has to come from a prior**: for the wheel loader, the camera position measured in the machine PCD.
+   **Translation therefore has to come from a prior**: for the general vehicle, the camera position measured in the machine PCD.
 3. **Translation prior accuracy drives rotation accuracy.** A 3 cm prior error is as good as a perfect
    prior. A 10 cm prior error raises the median to about 0.33° and the p90 to about 0.6°, and 20–30 % of
    trials miss 0.5°. **Target: camera position known to ≤ 3 cm.**
@@ -150,12 +150,9 @@ The translation error is about 10 cm in every case.
 
 ## Known limitations / next steps
 
-- No lidar–camera occlusion handling. The baseline is small on KITTI but not on a wheel loader.
+- No lidar–camera occlusion handling. The baseline is small on KITTI but not on a general vehicle.
 - No filtering of vegetation or clutter among the lidar edge points, and Canny responds to texture.
   A line-consistency filter on lidar edges and/or a learned edge detector should tighten the result.
 - Stage C has no edge-direction consistency check when pairing points with image edges.
 - The coarse stages depend on viewpoint diversity across frames. On the vehicle, capture 10–20
   distinct poses rather than many frames from one spot.
-
-KITTI data is licensed **CC BY-NC-SA 3.0 (non-commercial)**. This is fine for an internal POC; do not
-ship anything derived from it without checking with legal.
